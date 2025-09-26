@@ -14,6 +14,8 @@ async def command_start_handler(message: Message) -> None:
         "🏋️‍♂️ Fitness Planner Bot ga xush kelibsiz!\n"
         "✨ Bu yerda siz mashg‘ulotlaringizni rejalashtirasiz va natijalaringizni kuzatib borasiz."
     )
+
+
     await message.answer(f"Hello, {html.bold(message.from_user.full_name)}!")
     await message.answer_animation(
         animation=gif_url,  # 🔑 MUHIM — bu argument berilishi kerak
