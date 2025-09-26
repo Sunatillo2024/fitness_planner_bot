@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.egg
+*.manifest
+*.spec
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Databases
+*.db
+*.sqlite3
+*.sqlite
+
+# PostgreSQL dumps
+*.sql
+*.psql
+
+# Logs
+*.log
+logs/
+*.out
+
+# Cache
+*.cache
+*.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local config
+config.json
+config.yaml
+*.ini
+*.local
+
+# Media / Uploads
+media/
+uploads/
