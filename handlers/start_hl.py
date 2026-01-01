@@ -60,6 +60,7 @@ async def process_name(message: Message, state: FSMContext):
     await state.set_state(UserInfo.age)
 
 
+
 # ---------- 2️⃣ AGE ----------
 @router.message(StateFilter(UserInfo.age))
 async def process_age(message: Message, state: FSMContext):
