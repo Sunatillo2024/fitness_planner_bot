@@ -13,6 +13,7 @@ router = Router()
 # ---------- START COMMAND ----------
 @router.message(CommandStart())
 async def command_start_handler(message: Message, state: FSMContext):
+    print(message.text)
     from database.db import SessionLocal
     from database.models import User
 
