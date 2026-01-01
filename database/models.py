@@ -1,9 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
-
-from database.db import Base, engine
-
+from database.db import Base
 
 class User(Base):
     __tablename__ = "users"
@@ -18,6 +16,7 @@ class User(Base):
 
     progress = relationship("Progress", back_populates="user")
 
+
 class Progress(Base):
     __tablename__ = "progress"
 
@@ -27,5 +26,3 @@ class Progress(Base):
     weight = Column(Float, nullable=True)
 
     user = relationship("User", back_populates="progress")
-
-

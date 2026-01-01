@@ -5,9 +5,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from dotenv import load_dotenv
-
 from config import TOKEN
-from database.db import Base, engine
 from handlers.start_hl import router
 
 load_dotenv()
@@ -24,5 +22,7 @@ async def main() -> None:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     print("Creating tables...")
+    from database.db import Base, engine
+
     Base.metadata.create_all(bind=engine)
     asyncio.run(main())

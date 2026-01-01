@@ -13,3 +13,12 @@ def fitness_reply_menu() -> ReplyKeyboardMarkup:
         one_time_keyboard=False
     )
 
+
+goals_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="Weight Loss")],
+        [KeyboardButton(text="Muscle Gain")],
+        [KeyboardButton(text="Healthy Life")]
+    ],
+    resize_keyboard=True
+)
