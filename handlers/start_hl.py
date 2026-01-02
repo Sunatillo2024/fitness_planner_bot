@@ -117,7 +117,6 @@ async def process_goal(message: Message, state: FSMContext):
     }
     selected_goal = goal_map.get(message.text, "healthy_life")
 
-    # DB session ochish
     db = SessionLocal()
     try:
         create_user(db, telegram_id, user_data, selected_goal)
