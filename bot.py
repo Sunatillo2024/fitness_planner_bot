@@ -14,6 +14,7 @@ load_dotenv()
 dp = Dispatcher(bot=Bot(TOKEN))
 
 
+
 async def main() -> None:
     bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp.include_router(router)
