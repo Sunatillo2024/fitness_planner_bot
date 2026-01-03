@@ -1,57 +1,295 @@
-import asyncio
-from aiogram.types import CallbackQuery
-from aiogram.exceptions import TelegramBadRequest
-
-from aiogram import Router
+from aiogram import Router, F
+from aiogram.types import Message, CallbackQuery
 from keyboards.inline_kbt import get_exercises_keyboard
 
 exercises_router = Router()
 
+# Exercises ma'lumotlar bazasi
+HOME_EXERCISES = [
+    {
+        "name": "Push-ups",
+        "emoji": "💪",
+        "gif": "https://media.giphy.com/media/ZeAXZfK2v3z6hmMZEj/giphy.gif",
+        "muscles": "Chest, Triceps, Shoulders",
+        "sets_reps": "3 sets × 10-15 reps",
+        "description": "Ko'krak, qo'l va yelka mushaklarini kuchaytiradi. Klassik va samarali mashq.",
+        "tips": [
+            "Tanangiz to'g'ri chiziqda bo'lsin",
+            "Tirsak 45° burchakda",
+            "Nafas to'g'ri oling"
+        ]
+    },
+    {
+        "name": "Squats",
+        "emoji": "🦵",
+        "gif": "https://media.giphy.com/media/1qfDU4MJv9xoGtRKvh/giphy.gif",
+        "muscles": "Quads, Glutes, Hamstrings",
+        "sets_reps": "3 sets × 12-20 reps",
+        "description": "Oyoqlar va dumba mushaklarini rivojlantiradi. Eng asosiy mashqlardan biri.",
+        "tips": [
+            "Tizza oyoq barmog'idan oshmasin",
+            "Orqa to'g'ri",
+            "90° gacha tushing"
+        ]
+    },
+    {
+        "name": "Sit-ups",
+        "emoji": "🔥",
+        "gif": "https://media.giphy.com/media/2A75RyXVzzSI2bx4Gj/giphy.gif",
+        "muscles": "Abs, Core",
+        "sets_reps": "3 sets × 15-20 reps",
+        "description": "Qorin mushaklarini mustahkamlaydi va core kuchini oshiradi.",
+        "tips": [
+            "Qo'llarni boshda ushlamang",
+            "Mushakni sezib bajaring",
+            "Tez-tez nafas oling"
+        ]
+    },
+    {
+        "name": "Plank",
+        "emoji": "⚡",
+        "gif": "https://media.giphy.com/media/3o7TKPATxjbMM6l8Mo/giphy.gif",
+        "muscles": "Full Core, Shoulders",
+        "sets_reps": "3 sets × 30-60 sec",
+        "description": "Core barqarorlik va kuchini oshiradi. Statik mashq.",
+        "tips": [
+            "Tanangiz to'g'ri chiziqda",
+            "Dumba yuqoriga ko'tarilmasin",
+            "Nafas to'xtamang"
+        ]
+    },
+    {
+        "name": "Jumping Jacks",
+        "emoji": "❤️",
+        "gif": "https://media.giphy.com/media/26u4b45b8KlgAB7iM/giphy.gif",
+        "muscles": "Full Body Cardio",
+        "sets_reps": "3 sets × 30-50 reps",
+        "description": "Kardio va endurance oshirish uchun. Butun tanani ishlatadi.",
+        "tips": [
+            "Ritm ushlab turing",
+            "Yuqoriga sakrang",
+            "Qo'llarni to'liq oching"
+        ]
+    },
+    {
+        "name": "Lunges",
+        "emoji": "🦵",
+        "gif": "https://media.giphy.com/media/3oEjHUf7j0aFDce0dG/giphy.gif",
+        "muscles": "Quads, Glutes",
+        "sets_reps": "3 sets × 10 reps (har bir oyoq)",
+        "description": "Oyoqlar va muvozanat uchun mukammal mashq.",
+        "tips": [
+            "Tizza 90° burchakda",
+            "Orqa oyoq yerga tegmasin",
+            "Muvozanatni saqlang"
+        ]
+    },
+    {
+        "name": "Mountain Climbers",
+        "emoji": "🔥",
+        "gif": "https://media.giphy.com/media/l0HlAgJTVaAPHEGdy/giphy.gif",
+        "muscles": "Core, Cardio",
+        "sets_reps": "3 sets × 20-30 reps",
+        "description": "Kardio va core uchun dinamik mashq.",
+        "tips": [
+            "Tez harakat qiling",
+            "Tanangiz to'g'ri",
+            "Nafas ritmik"
+        ]
+    }
+]
 
-@exercises_router.message(lambda message: message.text == "🏋️ Exercises")
-async def exercises_handler(message):
+GYM_EXERCISES = [
+    {
+        "name": "Bench Press",
+        "emoji": "💪",
+        "gif": "https://media.giphy.com/media/3oEdva0KggGvBqB7Fe/giphy.gif",
+        "muscles": "Chest, Triceps, Shoulders",
+        "sets_reps": "4 sets × 8-12 reps",
+        "description": "Ko'krak uchun eng asosiy va samarali mashq. Og'irlik bilan.",
+        "tips": [
+            "Spotter bilan ishlang",
+            "Barni to'g'ri ushlangsiz",
+            "To'liq amplitudada"
+        ]
+    },
+    {
+        "name": "Deadlift",
+        "emoji": "🔥",
+        "gif": "https://media.giphy.com/media/3oEjI5VtIhHvK37WYo/giphy.gif",
+        "muscles": "Back, Legs, Core",
+        "sets_reps": "4 sets × 5-8 reps",
+        "description": "Butun tanani ishlatadigan kuchli mashq. Orqa va oyoqlar uchun.",
+        "tips": [
+            "Orqa har doim to'g'ri",
+            "Yelkanlar orqada",
+            "Texnikaga e'tibor bering"
+        ]
+    },
+    {
+        "name": "Lat Pulldown",
+        "emoji": "💪",
+        "gif": "https://media.giphy.com/media/26u4cqiYI30juCOGY/giphy.gif",
+        "muscles": "Lats, Biceps",
+        "sets_reps": "3 sets × 10-12 reps",
+        "description": "Orqa mushaklar kengligi uchun. Pull-up ga alternativa.",
+        "tips": [
+            "Ko'krak sari tortinng",
+            "Tirsak orqaga",
+            "Mushakni sezib bajaring"
+        ]
+    },
+    {
+        "name": "Shoulder Press",
+        "emoji": "⚡",
+        "gif": "https://media.giphy.com/media/xT8qBbx0BXs6oc0lgs/giphy.gif",
+        "muscles": "Shoulders, Triceps",
+        "sets_reps": "3 sets × 8-12 reps",
+        "description": "Yelka kuchi va hajmi uchun asosiy mashq.",
+        "tips": [
+            "O'tirgan holatda mos",
+            "To'liq yuqoriga",
+            "Boshni oldinga surmang"
+        ]
+    },
+    {
+        "name": "Barbell Rows",
+        "emoji": "💪",
+        "gif": "https://media.giphy.com/media/3oKIPlifLxdhyETJRK/giphy.gif",
+        "muscles": "Back Thickness, Biceps",
+        "sets_reps": "3 sets × 8-10 reps",
+        "description": "Orqa qalinligi uchun. Kuchli mashq.",
+        "tips": [
+            "Orqa parallel",
+            "Barni beliga tortinng",
+            "Tirsak tanaga yaqin"
+        ]
+    },
+    {
+        "name": "Leg Press",
+        "emoji": "🦵",
+        "gif": "https://media.giphy.com/media/l0HlR3kHtkgFbYfD2/giphy.gif",
+        "muscles": "Quads, Glutes",
+        "sets_reps": "3 sets × 12-15 reps",
+        "description": "Oyoqlar uchun xavfsiz va samarali mashq.",
+        "tips": [
+            "Oyoqlar yelka kengligida",
+            "90° gacha tushing",
+            "Tizza ichkariga ketmasin"
+        ]
+    },
+    {
+        "name": "Cable Flyes",
+        "emoji": "💪",
+        "gif": "https://media.giphy.com/media/3oEjHYAlLK4BZvkupq/giphy.gif",
+        "muscles": "Chest",
+        "sets_reps": "3 sets × 12-15 reps",
+        "description": "Ko'krak mushaklar uchun izolyatsiya mashq.",
+        "tips": [
+            "Mushakni cho'zing",
+            "Sekin va nazorat bilan",
+            "Ko'krakni siqing"
+        ]
+    }
+]
+
+
+@exercises_router.message(F.text == "🏋️ Exercises")
+async def exercises_menu(message: Message):
+    """Exercises menyusi"""
     await message.answer(
-        "Qaysi turdagi mashqlarni ko‘rmoqchisiz?",
+        "🏋️ <b>Mashqlar Katalogi</b>\n\n"
+        "Qaysi turdagi mashqlarni ko'rmoqchisiz?\n\n"
+        "🏠 <b>Home Workouts</b> - Uy uchun mashqlar\n"
+        "🏋️ <b>Gym Workouts</b> - Zal uchun mashqlar\n\n"
+        "💡 Har bir mashq uchun:\n"
+        "   • GIF animatsiya\n"
+        "   • Batafsil tavsif\n"
+        "   • Maslahatlar",
         reply_markup=get_exercises_keyboard()
     )
 
 
-@exercises_router.callback_query(lambda c: c.data == "home_workouts")
-async def show_exercises(callback: CallbackQuery):
-    await callback.answer()  # 🔑 loader o‘chadi
+@exercises_router.callback_query(F.data == "home_workouts")
+async def show_home_exercises(callback: CallbackQuery):
+    """Home exercises ro'yxatini ko'rsatish"""
+    exercises_list = "\n\n".join([
+        f"{i + 1}. {ex['emoji']} <b>{ex['name']}</b>\n"
+        f"   🎯 {ex['muscles']}\n"
+        f"   📊 {ex['sets_reps']}"
+        for i, ex in enumerate(HOME_EXERCISES)
+    ])
 
-    gif_url = "https://media.giphy.com/media/3pY8FQP9uMtDKXkYqX/giphy.gif"
-
-    await callback.message.answer_animation(
-        animation=gif_url,
-        caption="""💪 <b>Push-up mashqi</b>\n🔁 Takrorlash: <b>15 ta</b>\n🔥 Kuch va chidamlilik uchun""",
-        parse_mode="HTML"
+    response = (
+        f"🏠 <b>Home Workout Mashqlar</b>\n\n"
+        f"{exercises_list}\n\n"
+        f"💡 Har bir mashq haqida batafsil ma'lumot olish uchun\n"
+        f"mashq nomini yozing. Masalan: <code>Push-ups</code>"
     )
 
-    timer_msg = await callback.message.answer("⏱ Qolgan vaqt: 01:30")
-
-    total_seconds = 90
-    last_text = "⏱ Qolgan vaqt: 01:30"
-
-    for remaining in range(total_seconds - 1, -1, -1):
-        minutes = remaining // 60
-        seconds = remaining % 60
-        new_text = f"⏱ Qolgan vaqt: {minutes:02d}:{seconds:02d}"
-        if new_text == last_text:
-            await asyncio.sleep(1)
-            continue
-        try:
-            await timer_msg.edit_text(new_text)
-            last_text = new_text
-        except TelegramBadRequest:
-            pass
-        await asyncio.sleep(1)
-    try:
-        await timer_msg.edit_text("✅ Vaqt tugadi! Mashq yakunlandi 💪")
-    except TelegramBadRequest:
-        pass
+    await callback.message.edit_text(
+        response,
+        reply_markup=get_exercises_keyboard()
+    )
 
 
+@exercises_router.callback_query(F.data == "gym_workouts")
+async def show_gym_exercises(callback: CallbackQuery):
+    """Gym exercises ro'yxatini ko'rsatish"""
+    exercises_list = "\n\n".join([
+        f"{i + 1}. {ex['emoji']} <b>{ex['name']}</b>\n"
+        f"   🎯 {ex['muscles']}\n"
+        f"   📊 {ex['sets_reps']}"
+        for i, ex in enumerate(GYM_EXERCISES)
+    ])
+
+    response = (
+        f"🏋️ <b>Gym Workout Mashqlar</b>\n\n"
+        f"{exercises_list}\n\n"
+        f"💡 Har bir mashq haqida batafsil ma'lumot olish uchun\n"
+        f"mashq nomini yozing. Masalan: <code>Bench Press</code>"
+    )
+
+    await callback.message.edit_text(
+        response,
+        reply_markup=get_exercises_keyboard()
+    )
 
 
+@exercises_router.message(F.text)
+async def show_exercise_detail(message: Message):
+    """Mashq haqida batafsil ma'lumot"""
+    exercise_name = message.text.strip()
 
+    # Mashqni topish
+    all_exercises = HOME_EXERCISES + GYM_EXERCISES
+    exercise = None
+
+    for ex in all_exercises:
+        if ex['name'].lower() == exercise_name.lower():
+            exercise = ex
+            break
+
+    if not exercise:
+        return  # Mashq topilmasa, hech narsa qilmaymiz
+
+    # Batafsil ma'lumot
+    tips_text = "\n".join([f"   • {tip}" for tip in exercise['tips']])
+
+    caption = (
+        f"{exercise['emoji']} <b>{exercise['name']}</b>\n\n"
+        f"🎯 <b>Ishlaydigan mushaklar:</b>\n"
+        f"   {exercise['muscles']}\n\n"
+        f"📊 <b>Hajm:</b>\n"
+        f"   {exercise['sets_reps']}\n\n"
+        f"📝 <b>Tavsif:</b>\n"
+        f"   {exercise['description']}\n\n"
+        f"💡 <b>Maslahatlar:</b>\n"
+        f"{tips_text}\n\n"
+        f"🔥 Omad tilaymiz!"
+    )
+
+    await message.answer_animation(
+        animation=exercise['gif'],
+        caption=caption
+    )

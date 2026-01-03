@@ -7,3 +7,7 @@ class UserInfo(StatesGroup):
     weight = State()
     height = State()
     goal = State()
+
+
+class WorkoutSession(StatesGroup):
+    in_progress = State()
