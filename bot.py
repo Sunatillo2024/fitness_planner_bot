@@ -24,17 +24,14 @@ load_dotenv()
 dp = Dispatcher()
 
 
-async def main() -> None:
-    """Bot ishga tushirish"""
-    connector = aiohttp.TCPConnector(family=socket.AF_INET)
-    session = aiohttp.ClientSession(connector=connector)
+socket.setdefaulttimeout(30)
+socket.has_ipv6 = False
 
+async def main() -> None:
     bot = Bot(
         token=TOKEN,
-        session=session,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML)
     )
-
 
     # Routerlarni tartib bilan qo'shish
     dp.include_router(start_router)  # /start va registration
