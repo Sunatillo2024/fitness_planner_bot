@@ -1,23 +1,17 @@
 import asyncio
 import logging
 import sys
-import socket
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
-from aiogram.client.session import aiohttp
-from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.enums import ParseMode
 from dotenv import load_dotenv
 from config import TOKEN
 from handlers.help_hi import help_router
 from handlers.nutrition_hi import nutrition_router
 from handlers.progress_hi import progress_router
-
-
 from handlers.start_hl import router as start_router
 from handlers.exercises_hl import exercises_router
 from handlers.workout_hi import workout_router
-from aiohttp_socks import ProxyConnector
 
 load_dotenv()
 
@@ -25,28 +19,23 @@ load_dotenv()
 dp = Dispatcher()
 
 
-socket.setdefaulttimeout(30)
-socket.has_ipv6 = False
-
 async def main() -> None:
-    connector = ProxyConnector.from_url(
-        "http://proxy.server:port"  # ishlaydigan HTTP proxy
-    )
-
-    session = AiohttpSession(connector=connector)
-
+    """
+    Botni ishga tushirish
+    """
+    # Bot obyektini yaratish (proxy SHART EMAS!)
     bot = Bot(
         token=TOKEN,
-        session=session,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML)
     )
+
     # Routerlarni tartib bilan qo'shish
-    dp.include_router(start_router)  # /start va registration
-    dp.include_router(workout_router)  # 💪 Workout Plans
-    dp.include_router(exercises_router)  # 🏋️ Exercises
-    dp.include_router(progress_router)  # 📊 My Progress
-    dp.include_router(nutrition_router)  # 🥗 Nutrition + 🍎 Meal Plan
-    dp.include_router(help_router)  # ❓ Help
+    dp.include_router(start_router)
+    dp.include_router(workout_router)
+    dp.include_router(exercises_router)
+    dp.include_router(progress_router)
+    dp.include_router(nutrition_router)
+    dp.include_router(help_router)
 
     # Botni polling rejimida ishga tushirish
     print("✅ Bot polling rejimida ishlayapti...")
@@ -90,4 +79,7 @@ if __name__ == "__main__":
         print("=" * 50)
     except Exception as e:
         print(f"\n❌ Xatolik yuz berdi: {e}")
+        import traceback
+
+        traceback.print_exc()
         sys.exit(1)
