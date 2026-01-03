@@ -1,11 +1,11 @@
 import asyncio
 import logging
-import socket
 import sys
-
-import aiohttp
+import socket
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
+from aiogram.client.session import aiohttp
+from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.enums import ParseMode
 from dotenv import load_dotenv
 from config import TOKEN
@@ -13,7 +13,7 @@ from handlers.help_hi import help_router
 from handlers.nutrition_hi import nutrition_router
 from handlers.progress_hi import progress_router
 
-# Handlers
+
 from handlers.start_hl import router as start_router
 from handlers.exercises_hl import exercises_router
 from handlers.workout_hi import workout_router
@@ -28,11 +28,15 @@ socket.setdefaulttimeout(30)
 socket.has_ipv6 = False
 
 async def main() -> None:
+    connector = aiohttp.TCPConnector(family=socket.AF_INET)
+
+    session = AiohttpSession(connector=connector)
+
     bot = Bot(
         token=TOKEN,
+        session=session,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML)
     )
-
     # Routerlarni tartib bilan qo'shish
     dp.include_router(start_router)  # /start va registration
     dp.include_router(workout_router)  # 💪 Workout Plans
