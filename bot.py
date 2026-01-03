@@ -17,6 +17,7 @@ from handlers.progress_hi import progress_router
 from handlers.start_hl import router as start_router
 from handlers.exercises_hl import exercises_router
 from handlers.workout_hi import workout_router
+from aiohttp_socks import ProxyConnector
 
 load_dotenv()
 
@@ -28,13 +29,11 @@ socket.setdefaulttimeout(30)
 socket.has_ipv6 = False
 
 async def main() -> None:
-    connector = aiohttp.TCPConnector(family=socket.AF_INET)
-
-    session = AiohttpSession(
-        session_kwargs={
-            "connector": connector
-        }
+    connector = ProxyConnector.from_url(
+        "http://proxy.server:port"  # ishlaydigan HTTP proxy
     )
+
+    session = AiohttpSession(connector=connector)
 
     bot = Bot(
         token=TOKEN,
