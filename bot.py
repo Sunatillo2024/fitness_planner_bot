@@ -30,7 +30,11 @@ socket.has_ipv6 = False
 async def main() -> None:
     connector = aiohttp.TCPConnector(family=socket.AF_INET)
 
-    session = AiohttpSession(connector=connector)
+    session = AiohttpSession(
+        session_kwargs={
+            "connector": connector
+        }
+    )
 
     bot = Bot(
         token=TOKEN,
