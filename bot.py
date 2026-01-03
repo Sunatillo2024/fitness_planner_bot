@@ -1,6 +1,9 @@
 import asyncio
 import logging
+import socket
 import sys
+
+import aiohttp
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
@@ -23,11 +26,15 @@ dp = Dispatcher()
 
 async def main() -> None:
     """Bot ishga tushirish"""
-    # Bot obyektini yaratish
+    connector = aiohttp.TCPConnector(family=socket.AF_INET)
+    session = aiohttp.ClientSession(connector=connector)
+
     bot = Bot(
         token=TOKEN,
+        session=session,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML)
     )
+
 
     # Routerlarni tartib bilan qo'shish
     dp.include_router(start_router)  # /start va registration
