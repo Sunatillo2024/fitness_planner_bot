@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Text
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Text, JSON
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from database.db import Base
@@ -58,6 +58,23 @@ class ExerciseLog(Base):
 
     # Relationship
     session = relationship("WorkoutSession", back_populates="exercise_logs")
+
+class Exercise(Base):
+    """
+    Mashqlar ma'lumotlar bazasi
+    """
+    __tablename__ = "exercises"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False, unique=True)
+    emoji = Column(String, nullable=True)
+    gif_url = Column(String, nullable=True)
+    muscles = Column(String, nullable=True)
+    sets_reps = Column(String, nullable=True)
+    description = Column(Text, nullable=True)
+    tips = Column(JSON, nullable=True)  # List sifatida saqlanadi
+    exercise_type = Column(String, nullable=False)  # 'home' or 'gym'
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 
 class WeightProgress(Base):
